@@ -135,7 +135,6 @@ async function handleRegister() {
         const { auth, createUserWithEmailAndPassword } = window.firebaseAuth;
         const userCredential = await createUserWithEmailAndPassword(auth, currentUserEmail, password);
         console.log("Usuario registrado:", userCredential.user.email);
-        alert("¡Registro exitoso! Iniciando sesión...");
 
         if (selectedRole === 'admin') {
             goToAdminDashboard();
