@@ -1027,9 +1027,11 @@
                 <p class="text-gray-400">Mira este rápido video para entender cómo sacar el máximo provecho de tus
                     cursos.</p>
             </div>
-            <div class="aspect-video w-full bg-black">
-                <iframe id="welcome-video-player" class="w-full h-full" 
-                    src="https://www.youtube.com/embed/RbtmoqdME40?enablejsapi=1&rel=0&modestbranding=1" 
+            <div class="aspect-video w-full bg-black relative">
+                <!-- Capa invisible para bloquear TODOS los clics hacia YouTube -->
+                <div class="absolute inset-0 z-20"></div>
+                <iframe id="welcome-video-player" class="w-full h-full pointer-events-none" 
+                    src="https://www.youtube.com/embed/RbtmoqdME40?enablejsapi=1&rel=0&modestbranding=1&controls=0&disablekb=1&fs=0" 
                     title="YouTube video player" frameborder="0" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     allowfullscreen>
