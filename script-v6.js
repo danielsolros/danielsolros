@@ -304,7 +304,13 @@ function openWelcomeVideo() {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         const video = document.getElementById('welcome-video-player');
-        if(video) video.play().catch(e => console.log('Autoplay blocked'));
+        if (video) {
+            if (video.tagName === 'IFRAME') {
+                video.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            } else if (typeof video.play === 'function') {
+                video.play().catch(e => console.log('Autoplay blocked'));
+            }
+        }
     }
 }
 
@@ -312,7 +318,13 @@ function closeWelcomeVideo() {
     const modal = document.getElementById('welcome-modal');
     if(modal) {
         const video = document.getElementById('welcome-video-player');
-        if(video) video.pause();
+        if (video) {
+            if (video.tagName === 'IFRAME') {
+                video.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            } else if (typeof video.pause === 'function') {
+                video.pause();
+            }
+        }
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
