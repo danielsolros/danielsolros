@@ -89,12 +89,84 @@ function resetLogin() {
     currentClient = null; currentUserEmail = ''; hasSeenWelcomeVideo = false;
 }
 
-function handleLoginComplete(event) {
+async function handleLoginComplete(event) {
     event.preventDefault();
-    if (selectedRole === 'admin') {
-        goToAdminDashboard();
-    } else {
-        goToDashboard();
+    const password = document.getElementById('password-input').value;
+    const btn = document.getElementById('btn-final-login');
+    const originalText = btn.textContent;
+    btn.textContent = 'Cargando...';
+    btn.disabled = true;
+
+    try {
+        if (!window.firebaseAuth) throw new Error("Firebase no está inicializado.");
+        const { auth, signInWithEmailAndPassword } = window.firebaseAuth;
+        const userCredential = await signInWithEmailAndPassword(auth, currentUserEmail, password);
+        console.log("Usuario logueado:", userCredential.user.email);
+
+        if (selectedRole === 'admin') {
+            goToAdminDashboard();
+        } else {
+            goToDashboard();
+        }
+    } catch (error) {
+        console.error("Error al iniciar sesión:", error);
+        alert("Error al iniciar sesión: " + error.message);
+    } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }
+}
+
+async function handleRegister() {
+    const password = document.getElementById('password-input').value;
+    if (!password) {
+        return alert("Por favor ingresa una contraseña para registrarte.");
+    }
+
+    try {
+        if (!window.firebaseAuth) throw new Error("Firebase no está inicializado.");
+        const { auth, createUserWithEmailAndPassword } = window.firebaseAuth;
+        const userCredential = await createUserWithEmailAndPassword(auth, currentUserEmail, password);
+        console.log("Usuario registrado:", userCredential.user.email);
+        alert("¡Registro exitoso! Iniciando sesión...");
+
+        if (selectedRole === 'admin') {
+            goToAdminDashboard();
+        } else {
+            goToDashboard();
+        }
+    } catch (error) {
+        console.error("Error al registrar:", error);
+        alert("Error al registrar: " + error.message);
+    }
+}
+
+async function handleGoogleLogin() {
+    try {
+        if (!window.firebaseAuth) throw new Error("Firebase no está inicializado.");
+        const { auth, provider, signInWithPopup } = window.firebaseAuth;
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        console.log("Google Login exitoso:", user.email);
+        
+        currentUserEmail = user.email;
+        const domain = currentUserEmail.split('@')[1];
+        
+        currentClient = clientDatabase[domain] || {
+            name: domain.split('.')[0].toUpperCase(),
+            color: '#3b82f6', text: '#ffffff', logoText: domain.split('.')[0].toUpperCase()
+        };
+        applyCoBranding(currentClient);
+
+        // Simulamos el paso al dashboard
+        if (selectedRole === 'admin') {
+            goToAdminDashboard();
+        } else {
+            goToDashboard();
+        }
+    } catch (error) {
+        console.error("Error con Google Login:", error);
+        alert("Error al iniciar sesión con Google: " + error.message);
     }
 }
 
