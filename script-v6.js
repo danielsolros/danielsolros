@@ -306,7 +306,11 @@ function openWelcomeVideo() {
         const video = document.getElementById('welcome-video-player');
         if (video) {
             if (video.tagName === 'IFRAME') {
-                video.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                if (!video.src.includes('autoplay=1')) {
+                    video.src += '&autoplay=1';
+                } else {
+                    video.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                }
             } else if (typeof video.play === 'function') {
                 video.play().catch(e => console.log('Autoplay blocked'));
             }
