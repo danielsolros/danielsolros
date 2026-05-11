@@ -1,0 +1,91 @@
+/* Value Academy CSS - Estilos Premium */
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(100, 100, 100, 0.5); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(100, 100, 100, 0.8); }
+
+.glass-nav {
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Animaciones al hacer Scroll (Apple Style) */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.delay-100 { transition-delay: 100ms; animation-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; animation-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; animation-delay: 300ms; }
+
+:root {
+    --brand-color: #ffffff;
+    --brand-text: #000000;
+}
+
+.view.hidden { display: none !important; }
+.view.active { display: flex !important; }
+
+.syllabus-scroll { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+.syllabus-scroll::-webkit-scrollbar { width: 6px; }
+.syllabus-scroll::-webkit-scrollbar-track { background: #f8fafc; }
+.syllabus-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+
+/* Animación Medalla de Logro */
+.medal-popup.show {
+    animation: popMedal 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popMedal {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Configuraciones de Impresión para Certificado */
+@media print {
+    @page { size: landscape; margin: 0; }
+    body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body > *:not(#app-container) { display: none !important; }
+    #app-container > *:not(#view-certificate) { display: none !important; }
+    
+    #view-certificate {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        min-height: auto !important;
+        display: block !important;
+    }
+    #certificate-doc {
+        width: 100vw !important;
+        height: 100vh !important;
+        box-shadow: none !important;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+}
