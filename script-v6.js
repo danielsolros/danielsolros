@@ -93,9 +93,11 @@ async function handleLoginComplete(event) {
     event.preventDefault();
     const password = document.getElementById('password-input').value;
     const btn = document.getElementById('btn-final-login');
+    const errorMsg = document.getElementById('login-error-msg');
     const originalText = btn.textContent;
     btn.textContent = 'Cargando...';
     btn.disabled = true;
+    errorMsg.classList.add('hidden'); // Ocultar error previo
 
     try {
         if (!window.firebaseAuth) throw new Error("Firebase no está inicializado.");
@@ -110,7 +112,7 @@ async function handleLoginComplete(event) {
         }
     } catch (error) {
         console.error("Error al iniciar sesión:", error);
-        alert("Error al iniciar sesión: " + error.message);
+        errorMsg.classList.remove('hidden'); // Mostrar mensaje rojo de error
     } finally {
         btn.textContent = originalText;
         btn.disabled = false;
@@ -119,9 +121,14 @@ async function handleLoginComplete(event) {
 
 async function handleRegister() {
     const password = document.getElementById('password-input').value;
+    const errorMsg = document.getElementById('login-error-msg');
+    
     if (!password) {
-        return alert("Por favor ingresa una contraseña para registrarte.");
+        errorMsg.textContent = "Por favor ingresa una contraseña para registrarte.";
+        errorMsg.classList.remove('hidden');
+        return;
     }
+    errorMsg.classList.add('hidden');
 
     try {
         if (!window.firebaseAuth) throw new Error("Firebase no está inicializado.");
@@ -137,7 +144,8 @@ async function handleRegister() {
         }
     } catch (error) {
         console.error("Error al registrar:", error);
-        alert("Error al registrar: " + error.message);
+        errorMsg.textContent = "Error al registrarse: el correo ya está en uso o la contraseña es muy débil.";
+        errorMsg.classList.remove('hidden');
     }
 }
 

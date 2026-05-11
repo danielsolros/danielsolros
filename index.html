@@ -375,7 +375,7 @@
                         class="flex-1 py-2 text-sm font-medium rounded-lg text-gray-400 hover:text-white transition">Administrador</button>
                 </div>
 
-                <div class="relative overflow-hidden h-[240px]">
+                <div class="relative overflow-hidden h-[280px]">
                     <form id="step1-form"
                         class="absolute inset-0 transition-transform duration-500 transform translate-x-0 w-full flex flex-col"
                         onsubmit="handleEmailSubmit(event)">
@@ -405,6 +405,7 @@
                             <input type="password" id="password-input" required placeholder="Contraseña"
                                 class="w-full bg-black/50 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] transition">
                         </div>
+                        <p id="login-error-msg" class="text-red-500 text-sm mb-4 hidden text-center">Error al iniciar sesión, revise si es correcto su correo y contraseña.</p>
                         <button type="submit" id="btn-final-login"
                             class="w-full bg-white text-black font-semibold py-3 rounded-xl hover:opacity-90 transition active:scale-95 mb-3">Iniciar Sesión</button>
                         <button type="button" onclick="handleRegister()"
