@@ -119,22 +119,61 @@ async function handleLoginComplete(event) {
     }
 }
 
-async function handleRegister() {
-    const password = document.getElementById('password-input').value;
-    const errorMsg = document.getElementById('login-error-msg');
+function goToRegister() { 
+    showView('view-register'); 
+    selectRegRole(selectedRole);
+}
+
+function selectRegRole(role) {
+    selectedRole = role;
+    const btnStudent = document.getElementById('btn-reg-role-student');
+    const btnAdmin = document.getElementById('btn-reg-role-admin');
     
-    if (!password) {
-        errorMsg.textContent = "Por favor ingresa una contraseña para registrarte.";
-        errorMsg.classList.remove('hidden');
-        return;
+    if (role === 'student') {
+        btnStudent.classList.replace('text-gray-400', 'text-white');
+        btnStudent.classList.replace('hover:text-white', 'bg-white/10');
+        btnStudent.classList.add('shadow');
+        
+        btnAdmin.classList.replace('text-white', 'text-gray-400');
+        btnAdmin.classList.replace('bg-white/10', 'hover:text-white');
+        btnAdmin.classList.remove('shadow');
+    } else {
+        btnAdmin.classList.replace('text-gray-400', 'text-white');
+        btnAdmin.classList.replace('hover:text-white', 'bg-white/10');
+        btnAdmin.classList.add('shadow');
+        
+        btnStudent.classList.replace('text-white', 'text-gray-400');
+        btnStudent.classList.replace('bg-white/10', 'hover:text-white');
+        btnStudent.classList.remove('shadow');
     }
+}
+
+async function handleRegistrationSubmit(event) {
+    event.preventDefault();
+    const email = document.getElementById('reg-email-input').value.trim().toLowerCase();
+    const password = document.getElementById('reg-password-input').value;
+    const btn = document.getElementById('btn-final-register');
+    const errorMsg = document.getElementById('reg-error-msg');
+    
+    const originalText = btn.textContent;
+    btn.textContent = 'Creando cuenta...';
+    btn.disabled = true;
     errorMsg.classList.add('hidden');
 
     try {
         if (!window.firebaseAuth) throw new Error("Firebase no está inicializado.");
         const { auth, createUserWithEmailAndPassword } = window.firebaseAuth;
-        const userCredential = await createUserWithEmailAndPassword(auth, currentUserEmail, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         console.log("Usuario registrado:", userCredential.user.email);
+        
+        // Asignar el email actual y extraer dominio para el Dashboard
+        currentUserEmail = email;
+        const domain = email.split('@')[1];
+        currentClient = clientDatabase[domain] || {
+            name: domain.split('.')[0].toUpperCase(),
+            color: '#3b82f6', text: '#ffffff', logoText: domain.split('.')[0].toUpperCase()
+        };
+        applyCoBranding(currentClient);
 
         if (selectedRole === 'admin') {
             goToAdminDashboard();
@@ -143,8 +182,11 @@ async function handleRegister() {
         }
     } catch (error) {
         console.error("Error al registrar:", error);
-        errorMsg.textContent = "Error al registrarse: el correo ya está en uso o la contraseña es muy débil.";
+        errorMsg.textContent = "Error al registrarse. Revise si el correo ya existe o use una contraseña de al menos 6 caracteres.";
         errorMsg.classList.remove('hidden');
+    } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
     }
 }
 

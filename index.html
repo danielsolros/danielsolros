@@ -408,7 +408,7 @@
                         <p id="login-error-msg" class="text-red-500 text-sm mb-4 hidden text-center">Error al iniciar sesión, revise si es correcto su correo y contraseña.</p>
                         <button type="submit" id="btn-final-login"
                             class="w-full bg-white text-black font-semibold py-3 rounded-xl hover:opacity-90 transition active:scale-95 mb-3">Iniciar Sesión</button>
-                        <button type="button" onclick="handleRegister()"
+                        <button type="button" onclick="goToRegister()"
                             class="w-full bg-transparent border border-white/20 text-white font-semibold py-3 rounded-xl hover:bg-white/5 transition active:scale-95">Registrarse</button>
                     </form>
                 </div>
@@ -416,6 +416,47 @@
                     <button onclick="goToLanding()" class="text-sm text-gray-500 hover:text-white transition">Volver al
                         inicio</button>
                 </div>
+            </div>
+        </section>
+
+
+        <!-- ================= VISTA: REGISTRO ================= -->
+        <section id="view-register" class="view hidden w-full min-h-screen items-center justify-center relative overflow-hidden bg-vaDark" style="--brand-color: #0a0a0a;">
+            <div id="register-bg-overlay" class="absolute inset-0 opacity-100 transition-opacity duration-1000" style="background: radial-gradient(circle at center, #3b82f6 0%, transparent 70%);"></div>
+            <div class="relative z-10 w-full max-w-md p-8 glass-panel rounded-3xl border border-white/10 shadow-2xl backdrop-blur-xl">
+
+                <div class="text-center mb-8">
+                    <div class="h-16 flex items-center justify-center mb-2">
+                        <span class="text-3xl font-bold text-white">Value<span class="font-light">Academy</span></span>
+                    </div>
+                    <p class="text-gray-400 text-sm font-medium">Crea tu cuenta nueva</p>
+                </div>
+
+                <div id="reg-role-selector"
+                    class="flex p-1 bg-black/40 rounded-xl mb-6 border border-white/10 transition-opacity duration-300">
+                    <button type="button" id="btn-reg-role-student" onclick="selectRegRole('student')"
+                        class="flex-1 py-2 text-sm font-medium rounded-lg bg-white/10 text-white shadow transition">Estudiante</button>
+                    <button type="button" id="btn-reg-role-admin" onclick="selectRegRole('admin')"
+                        class="flex-1 py-2 text-sm font-medium rounded-lg text-gray-400 hover:text-white transition">Administrador</button>
+                </div>
+
+                <form id="register-form" class="w-full flex flex-col" onsubmit="handleRegistrationSubmit(event)">
+                    <div class="mb-4">
+                        <input type="email" id="reg-email-input" required placeholder="Tu correo corporativo"
+                            class="w-full bg-black/50 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] transition">
+                    </div>
+                    <div class="mb-4">
+                        <input type="password" id="reg-password-input" required placeholder="Contraseña (mín. 6 caracteres)"
+                            class="w-full bg-black/50 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] transition">
+                    </div>
+                    <p id="reg-error-msg" class="text-red-500 text-sm mb-4 hidden text-center">Error al registrarse. El correo podría estar en uso o la contraseña es muy débil.</p>
+                    
+                    <button type="submit" id="btn-final-register"
+                        class="w-full bg-[#3b82f6] text-white font-semibold py-3 rounded-xl hover:opacity-90 transition active:scale-95 mb-3">Registrar Cuenta</button>
+                    
+                    <button type="button" onclick="goToLogin()"
+                        class="w-full bg-transparent border border-white/20 text-white font-semibold py-3 rounded-xl hover:bg-white/5 transition active:scale-95">Ya tengo una cuenta</button>
+                </form>
             </div>
         </section>
 
