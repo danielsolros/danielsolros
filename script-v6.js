@@ -6,8 +6,26 @@ const clientDatabase = {
 
 let currentClient = { name: 'Empresa Demo', color: '#3b82f6', text: '#ffffff', logoText: 'EMPRESA' };
 let currentUserEmail = '';
+let currentUserId = null;
+let currentUserProfile = null;
 let hasSeenWelcomeVideo = false;
 let selectedRole = 'student'; 
+
+async function loadUserProfile() {
+    if (!currentUserId || !window.firebaseDb) return;
+    const { db, doc, getDoc } = window.firebaseDb;
+    try {
+        const docRef = doc(db, "users", currentUserId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            currentUserProfile = docSnap.data();
+        } else {
+            currentUserProfile = null;
+        }
+    } catch (e) {
+        console.error("Error al cargar perfil:", e);
+    }
+} 
 
 function showView(viewId) {
     document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.classList.add('hidden'); });
@@ -104,11 +122,18 @@ async function handleLoginComplete(event) {
         const { auth, signInWithEmailAndPassword } = window.firebaseAuth;
         const userCredential = await signInWithEmailAndPassword(auth, currentUserEmail, password);
         console.log("Usuario logueado:", userCredential.user.email);
+        currentUserId = userCredential.user.uid;
 
-        if (selectedRole === 'admin') {
-            goToAdminDashboard();
+        await loadUserProfile();
+
+        if (!currentUserProfile) {
+            showView('view-profile-setup');
         } else {
-            goToDashboard();
+            if (selectedRole === 'admin') {
+                goToAdminDashboard();
+            } else {
+                goToDashboard();
+            }
         }
     } catch (error) {
         console.error("Error al iniciar sesión:", error);
@@ -168,6 +193,7 @@ async function handleRegistrationSubmit(event) {
         
         // Asignar el email actual y extraer dominio para el Dashboard
         currentUserEmail = email;
+        currentUserId = userCredential.user.uid;
         const domain = email.split('@')[1];
         currentClient = clientDatabase[domain] || {
             name: domain.split('.')[0].toUpperCase(),
@@ -175,11 +201,8 @@ async function handleRegistrationSubmit(event) {
         };
         applyCoBranding(currentClient);
 
-        if (selectedRole === 'admin') {
-            goToAdminDashboard();
-        } else {
-            goToDashboard();
-        }
+        // Mostrar perfil setup después del registro
+        showView('view-profile-setup');
     } catch (error) {
         console.error("Error al registrar:", error);
         errorMsg.textContent = "Error al registrarse. Revise si el correo ya existe o use una contraseña de al menos 6 caracteres.";
@@ -199,6 +222,7 @@ async function handleGoogleLogin() {
         console.log("Google Login exitoso:", user.email);
         
         currentUserEmail = user.email;
+        currentUserId = user.uid;
         const domain = currentUserEmail.split('@')[1];
         
         currentClient = clientDatabase[domain] || {
@@ -207,15 +231,121 @@ async function handleGoogleLogin() {
         };
         applyCoBranding(currentClient);
 
-        // Simulamos el paso al dashboard
-        if (selectedRole === 'admin') {
-            goToAdminDashboard();
+        await loadUserProfile();
+        
+        if (!currentUserProfile) {
+            showView('view-profile-setup');
         } else {
-            goToDashboard();
+            if (selectedRole === 'admin') goToAdminDashboard();
+            else goToDashboard();
         }
     } catch (error) {
         console.error("Error con Google Login:", error);
         alert("Error al iniciar sesión con Google: " + error.message);
+    }
+}
+
+// --- Perfil Usuario ---
+async function handleProfileSubmit(event) {
+    event.preventDefault();
+    const name = document.getElementById('profile-name-input').value;
+    const phone = document.getElementById('profile-phone-input').value;
+    const job = document.getElementById('profile-job-input').value;
+    const btn = document.getElementById('btn-save-profile');
+    const errorMsg = document.getElementById('profile-error-msg');
+    
+    btn.textContent = 'Guardando...';
+    btn.disabled = true;
+    errorMsg.classList.add('hidden');
+    
+    try {
+        if (!window.firebaseDb || !currentUserId) throw new Error("No hay sesión activa.");
+        const { db, doc, setDoc } = window.firebaseDb;
+        
+        const profileData = {
+            name: name,
+            phone: phone,
+            job: job,
+            email: currentUserEmail,
+            role: selectedRole
+        };
+        
+        await setDoc(doc(db, "users", currentUserId), profileData);
+        currentUserProfile = profileData;
+        
+        if (selectedRole === 'admin') goToAdminDashboard();
+        else goToDashboard();
+        
+    } catch (e) {
+        console.error("Error guardando perfil:", e);
+        errorMsg.classList.remove('hidden');
+    } finally {
+        btn.textContent = 'Guardar y Continuar';
+        btn.disabled = false;
+    }
+}
+
+window.openEditProfileModal = async function() {
+    if (!currentUserProfile) await loadUserProfile();
+    
+    if (currentUserProfile) {
+        document.getElementById('edit-profile-name').value = currentUserProfile.name || '';
+        document.getElementById('edit-profile-phone').value = currentUserProfile.phone || '';
+        document.getElementById('edit-profile-job').value = currentUserProfile.job || '';
+    } else {
+        document.getElementById('edit-profile-name').value = currentUserEmail.split('@')[0];
+    }
+    
+    const modal = document.getElementById('edit-profile-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+window.handleEditProfileSubmit = async function(event) {
+    event.preventDefault();
+    const name = document.getElementById('edit-profile-name').value;
+    const phone = document.getElementById('edit-profile-phone').value;
+    const job = document.getElementById('edit-profile-job').value;
+    const btn = document.getElementById('btn-update-profile');
+    const errorMsg = document.getElementById('edit-profile-error-msg');
+    
+    btn.textContent = 'Actualizando...';
+    btn.disabled = true;
+    errorMsg.classList.add('hidden');
+    
+    try {
+        if (!window.firebaseDb || !currentUserId) throw new Error("No hay sesión.");
+        const { db, doc, setDoc } = window.firebaseDb;
+        
+        const profileData = {
+            ...(currentUserProfile || {}),
+            name: name,
+            phone: phone,
+            job: job,
+            email: currentUserEmail
+        };
+        
+        await setDoc(doc(db, "users", currentUserId), profileData, { merge: true });
+        currentUserProfile = profileData;
+        
+        // Actualizar UI si estamos en dashboard estudiante
+        const viewDash = document.getElementById('view-dashboard');
+        if (viewDash && viewDash.classList.contains('active')) {
+            let prettyName = name || currentUserEmail.split('@')[0];
+            document.getElementById('dash-user-name').textContent = prettyName;
+            document.getElementById('dash-avatar').textContent = prettyName.charAt(0).toUpperCase();
+            document.getElementById('dash-welcome').textContent = `¡Hola, ${prettyName}!`;
+        }
+        
+        const modal = document.getElementById('edit-profile-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    } catch (e) {
+        console.error("Error actualizando perfil:", e);
+        errorMsg.classList.remove('hidden');
+    } finally {
+        btn.textContent = 'Actualizar Perfil';
+        btn.disabled = false;
     }
 }
 
@@ -286,9 +416,12 @@ function goToDashboard() {
     if (!currentClient) return;
     
     document.getElementById('dash-client-logo').textContent = currentClient.logoText;
-    let prettyName = currentUserEmail.split('@')[0].split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    let prettyName = (currentUserProfile && currentUserProfile.name) 
+        ? currentUserProfile.name 
+        : currentUserEmail.split('@')[0].split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    
     document.getElementById('dash-user-name').textContent = prettyName;
-    document.getElementById('dash-avatar').textContent = prettyName.charAt(0);
+    document.getElementById('dash-avatar').textContent = prettyName.charAt(0).toUpperCase();
     document.getElementById('dash-welcome').textContent = `¡Hola, ${prettyName}!`;
     document.getElementById('dash-msg').textContent = `Cursos preparados por ${currentClient.name} para ti.`;
     
@@ -401,7 +534,7 @@ function closeAchievementAndCertify() {
     const modal = document.getElementById('achievement-modal');
     modal.classList.replace('flex', 'hidden');
     
-    let prettyName = currentUserEmail ? currentUserEmail.split('@')[0].split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Estudiante Demo';
+    let prettyName = (currentUserProfile && currentUserProfile.name) ? currentUserProfile.name : (currentUserEmail ? currentUserEmail.split('@')[0].split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Estudiante Demo');
     viewCertificate(prettyName);
 }
 
