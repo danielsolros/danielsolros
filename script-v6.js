@@ -43,23 +43,18 @@ function selectRole(role) {
     const btnAdmin = document.getElementById('btn-role-admin');
     
     if (role === 'student') {
-        btnStudent.classList.replace('text-gray-400', 'text-white');
-        btnStudent.classList.replace('hover:text-white', 'bg-white/10');
-        btnStudent.classList.add('shadow');
-        
-        btnAdmin.classList.replace('text-white', 'text-gray-400');
-        btnAdmin.classList.replace('bg-white/10', 'hover:text-white');
-        btnAdmin.classList.remove('shadow');
+        // Estudiante Activo
+        btnStudent.className = "flex-1 py-3 text-sm font-semibold rounded-xl bg-white text-black shadow-xl transition-all duration-300 transform";
+        // Admin Inactivo
+        btnAdmin.className = "flex-1 py-3 text-sm font-semibold rounded-xl text-gray-400 hover:text-white transition-all duration-300";
     } else {
-        btnAdmin.classList.replace('text-gray-400', 'text-white');
-        btnAdmin.classList.replace('hover:text-white', 'bg-white/10');
-        btnAdmin.classList.add('shadow');
-        
-        btnStudent.classList.replace('text-white', 'text-gray-400');
-        btnStudent.classList.replace('bg-white/10', 'hover:text-white');
-        btnStudent.classList.remove('shadow');
+        // Admin Activo
+        btnAdmin.className = "flex-1 py-3 text-sm font-semibold rounded-xl bg-white text-black shadow-xl transition-all duration-300 transform";
+        // Estudiante Inactivo
+        btnStudent.className = "flex-1 py-3 text-sm font-semibold rounded-xl text-gray-400 hover:text-white transition-all duration-300";
     }
 }
+
 
 function handleEmailSubmit(event) {
     event.preventDefault();
@@ -172,6 +167,7 @@ function selectRegRole(role) {
         btnStudent.classList.remove('shadow');
     }
 }
+
 
 async function handleRegistrationSubmit(event) {
     event.preventDefault();

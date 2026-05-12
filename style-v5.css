@@ -160,3 +160,93 @@ input[type=range]::-webkit-slider-runnable-track {
     background: #374151;
     border-radius: 4px;
 }
+
+/* --- LOGIN ENHANCEMENTS --- */
+.login-blob {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
+    filter: blur(80px);
+    border-radius: 50%;
+    z-index: 0;
+    pointer-events: none;
+    animation: float 20s infinite alternate ease-in-out;
+}
+
+.login-blob-2 {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(59, 130, 246, 0.15));
+    width: 600px;
+    height: 600px;
+    right: -100px;
+    bottom: -100px;
+    animation-delay: -5s;
+    animation-duration: 25s;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(100px, 50px) rotate(120deg); }
+    66% { transform: translate(-50px, 100px) rotate(240deg); }
+    100% { transform: translate(0, 0) rotate(360deg); }
+}
+
+.premium-input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.premium-input:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.05) !important;
+    transform: translateY(-2px);
+}
+
+.login-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.05),
+        transparent
+    );
+    transition: 0.5s;
+    pointer-events: none;
+}
+
+.login-card:hover::before {
+    left: 100%;
+}
+
+.btn-premium {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgba(255, 255, 255, 0.2);
+}
+
+.btn-premium:active {
+    transform: translateY(0);
+}
+
