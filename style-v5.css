@@ -22,6 +22,26 @@
     perspective: 1000px;
 }
 
+/* Animaciones Premium Personalizadas */
+.animate-text-shimmer {
+    background-size: 200% auto;
+    animation: textShimmer 4s ease-out infinite alternate;
+}
+
+@keyframes textShimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+.animate-pulse-slow {
+    animation: pulseSlow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulseSlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .5; }
+}
+
 /* Animaciones Apple Style Definitivas */
 .fade-in-up {
     animation: fadeInUpApple 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
